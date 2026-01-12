@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- mark `removeOrientationChangeListeners` and `removeOrientationChangeListener` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
+
 ## 9.0.8 - 2025-12-05
 
 _This version does not introduce any user-facing changes._
