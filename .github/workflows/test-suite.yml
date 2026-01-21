@@ -31,48 +31,70 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      should_run_ios: ${{ steps.filter_standard.outputs.shared == 'true' || steps.filter_standard.outputs.ios_native == 'true' || steps.filter_headers.outputs.ios_h == 'true' }}
-      should_run_android: ${{ steps.filter_standard.outputs.shared == 'true' || steps.filter_standard.outputs.android_native == 'true' || steps.filter_headers.outputs.android_h == 'true' }}
+      should_run_ios: >-
+        ${{ 
+          steps.filter.outputs.ios == 'true' || 
+          (
+            steps.filter.outputs.scope == 'true' && 
+            steps.filter.outputs.android != 'true' && 
+            steps.filter.outputs.trash != 'true'
+          ) 
+        }}
+
+      should_run_android: >-
+        ${{ 
+          steps.filter.outputs.android == 'true' || 
+          (
+            steps.filter.outputs.scope == 'true' && 
+            steps.filter.outputs.ios != 'true' && 
+            steps.filter.outputs.trash != 'true'
+          ) 
+        }}
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: dorny/paths-filter@v3
-        id: filter_standard
+        id: filter
         with:
           filters: |
-            shared:
-              - 'packages/**/*.ts'
-              - 'packages/**/*.tsx'
-              - 'packages/**/*.js'
-              - 'package.json'
-              - 'yarn.lock'
-              - '.github/workflows/test-suite.yml'
-              - 'apps/bare-expo/**'
-
-            ios_native:
+            ios:
               - 'packages/**/ios/**'
-              - '**/*.swift'
-              - '**/*.m'
-              - '**/*.mm'
+              - 'packages/**/*.swift'
+              - 'packages/**/*.m'
+              - 'packages/**/*.mm'
+              - 'packages/**/*.podspec'
+              - 'packages/**/Podfile*'
+              - 'packages/**/*.xcodeproj/**'
+              - 'packages/**/*.xcworkspace/**'
 
-            android_native:
+            android:
               - 'packages/**/android/**'
-              - '**/*.java'
-              - '**/*.kt'
-              - '**/*.gradle'
+              - 'packages/**/*.java'
+              - 'packages/**/*.kt'
+              - 'packages/**/*.gradle.kts'
+              - 'packages/**/*.gradlew'
+              - 'packages/**/*.gradle'
+              - 'packages/**/gradle.properties'
+              - 'packages/**/AndroidManifest.xml'
 
-      - uses: dorny/paths-filter@v3
-        id: filter_headers
-        with:
-          predicate-quantifier: 'every'
-          filters: |
-            ios_h:
-              - '**/*.h'
-              - '!**/android/**'
+            trash:
+              - '**/CHANGELOG.md'
+              - '**/CHANGELOG'
+              - '**/.gitignore'
+              - '**/LICENSE'
+              - '**/LICENSE.md'
+              - '**/LICENSE.txt'
+              - '**.md'
 
-            android_h:
-              - '**/*.h'
-              - '!**/ios/**'
-
+            scope:
+              - 'apps/bare-expo/**'
+              - 'apps/test-suite/**'
+              - 'packages/**'
+              - '.github/workflows/test-suite.yml'
+              - '.github/actions/use-android-emulator/action.yml'
+              - 'yarn.lock'
+              - 'package.json'
   ios-build:
     runs-on: macos-15
     needs: check-changes
