@@ -35,6 +35,9 @@ jobs:
       should_run_android: ${{ steps.analyze.outputs.android }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
       - uses: tj-actions/changed-files@v45
         id: changed-files
         with:
