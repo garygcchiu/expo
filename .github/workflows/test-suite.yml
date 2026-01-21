@@ -31,59 +31,54 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      should_run_ios: >-
-        ${{ 
-          steps.filter.outputs.ios == 'true' || 
-          (
-            steps.filter.outputs.android != 'true' 
-          ) 
-        }}
-
-      should_run_android: >-
-        ${{ 
-          steps.filter.outputs.android == 'true' || 
-          (
-            steps.filter.outputs.ios != 'true'
-          ) 
-        }}
-
+      should_run_ios: ${{ steps.analyze.outputs.ios }}
+      should_run_android: ${{ steps.analyze.outputs.android }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
+      - uses: tj-actions/changed-files@v45
+        id: changed-files
         with:
-          filters: |
-            ios:
-              - 'packages/**/ios/**'
-              - 'packages/**/*.swift'
-              - 'packages/**/*.m'
-              - 'packages/**/*.mm'
-              - 'packages/**/*.podspec'
-              - 'packages/**/Podfile*'
-              - 'packages/**/*.xcodeproj/**'
-              - 'packages/**/*.xcworkspace/**'
+          files: |
+            apps/bare-expo/**
+            apps/test-suite/**
+            packages/**
+            .github/workflows/test-suite.yml
+            .github/actions/use-android-emulator/action.yml
+            yarn.lock
+          files_ignore: |
+            **.md
+            LICENSE*
+            **/.gitignore
+            **/CHANGELOG*
 
-            android:
-              - 'packages/**/android/**'
-              - 'packages/**/*.java'
-              - 'packages/**/*.kt'
-              - 'packages/**/*.gradle.kts'
-              - 'packages/**/*.gradlew'
-              - 'packages/**/*.gradle'
-              - 'packages/**/gradle.properties'
-              - 'packages/**/AndroidManifest.xml'
+      - name: Analyze Changes
+        id: analyze
+        run: |
+          FILES="${{ steps.changed-files.outputs.all_changed_files }}"
 
-            typescript:
-              - 'packages/**'
-              - '!**.md'
+          RUN_IOS="false"
+          RUN_ANDROID="false"
 
-            scope:
-              - 'apps/bare-expo/**'
-              - 'apps/test-suite/**'
-              - '.github/workflows/test-suite.yml'
-              - '.github/actions/use-android-emulator/action.yml'
-              - 'yarn.lock'
-              - 'package.json'
+          if [[ -n "$FILES" ]]; then
+            for FILE in $FILES; do
+              if [[ "$FILE" == *"packages/"*"/ios/"* ]] || [[ "$FILE" == *".swift" ]] || [[ "$FILE" == *".podspec" ]] || [[ "$FILE" == *".xcodeproj"* ]]; then
+                RUN_IOS="true"
+                continue
+              fi
+
+              if [[ "$FILE" == *"packages/"*"/android/"* ]] || [[ "$FILE" == *".java" ]] || [[ "$FILE" == *".kt" ]] || [[ "$FILE" == *".gradle"* ]]; then
+                RUN_ANDROID="true"
+                continue
+              fi
+
+              RUN_IOS="true"
+              RUN_ANDROID="true"
+              break
+            done
+          fi
+
+          echo "ios=$RUN_IOS" >> "$GITHUB_OUTPUT"
+          echo "android=$RUN_ANDROID" >> "$GITHUB_OUTPUT"
 
   ios-build:
     runs-on: macos-15
