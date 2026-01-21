@@ -31,43 +31,52 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      is_ios_affected: ${{ steps.filter.outputs.ios }}
-      is_android_affected: ${{ steps.filter.outputs.android }}
+      should_run_ios: ${{ steps.filter_standard.outputs.shared == 'true' || steps.filter_standard.outputs.ios_native == 'true' || steps.filter_headers.outputs.ios_h == 'true' }}
+      should_run_android: ${{ steps.filter_standard.outputs.shared == 'true' || steps.filter_standard.outputs.android_native == 'true' || steps.filter_headers.outputs.android_h == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
-        id: filter
+        id: filter_standard
         with:
           filters: |
-            shared: &shared
-              - "packages/**/*.ts"
-              - "packages/**/*.tsx"
-              - "packages/**/*.js"
-              - "packages/**/*.jsx"
-              - "packages/**/package.json"
-              - "yarn.lock"
-              - .github/workflows/test-suite.yml
-              - .github/actions/use-android-emulator/action.yml
-              - apps/bare-expo/**
-              - apps/test-suite/**
+            shared:
+              - 'packages/**/*.ts'
+              - 'packages/**/*.tsx'
+              - 'packages/**/*.js'
+              - 'package.json'
+              - 'yarn.lock'
+              - '.github/workflows/test-suite.yml'
+              - 'apps/bare-expo/**'
 
-            ios:
-              - *shared
-              - "packages/**/ios/**"
-              - "**/*.swift"
-              - "**/*.m"
+            ios_native:
+              - 'packages/**/ios/**'
+              - '**/*.swift'
+              - '**/*.m'
+              - '**/*.mm'
 
-            android:
-              - *shared
-              - "packages/**/android/**"
-              - "**/*.java"
-              - "**/*.kt"
-              - "**/*.gradle"
-              - '**/gradle.properties'
+            android_native:
+              - 'packages/**/android/**'
+              - '**/*.java'
+              - '**/*.kt'
+              - '**/*.gradle'
+
+      - uses: dorny/paths-filter@v3
+        id: filter_headers
+        with:
+          predicate-quantifier: 'every'
+          filters: |
+            ios_h:
+              - '**/*.h'
+              - '!**/android/**'
+
+            android_h:
+              - '**/*.h'
+              - '!**/ios/**'
+
   ios-build:
     runs-on: macos-15
     needs: check-changes
-    if: needs.check-changes.outputs.is_ios_affected == 'true'
+    if: needs.check-changes.outputs.should_run_ios == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
@@ -252,7 +261,7 @@ jobs:
   android-build:
     runs-on: ubuntu-24.04
     needs: check-changes
-    if: needs.check-changes.outputs.is_android_affected == 'true'
+    if: needs.check-changes.outputs.should_run_android == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
