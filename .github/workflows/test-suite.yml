@@ -35,9 +35,7 @@ jobs:
         ${{ 
           steps.filter.outputs.ios == 'true' || 
           (
-            steps.filter.outputs.scope == 'true' && 
-            steps.filter.outputs.android != 'true' && 
-            steps.filter.outputs.trash != 'true'
+            steps.filter.outputs.android != 'true' 
           ) 
         }}
 
@@ -45,15 +43,12 @@ jobs:
         ${{ 
           steps.filter.outputs.android == 'true' || 
           (
-            steps.filter.outputs.scope == 'true' && 
-            steps.filter.outputs.ios != 'true' && 
-            steps.filter.outputs.trash != 'true'
+            steps.filter.outputs.ios != 'true'
           ) 
         }}
 
     steps:
       - uses: actions/checkout@v4
-
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -78,23 +73,18 @@ jobs:
               - 'packages/**/gradle.properties'
               - 'packages/**/AndroidManifest.xml'
 
-            trash:
-              - '**/CHANGELOG.md'
-              - '**/CHANGELOG'
-              - '**/.gitignore'
-              - '**/LICENSE'
-              - '**/LICENSE.md'
-              - '**/LICENSE.txt'
-              - '**.md'
+            typescript:
+              - 'packages/**'
+              - '!**.md'
 
             scope:
               - 'apps/bare-expo/**'
               - 'apps/test-suite/**'
-              - 'packages/**'
               - '.github/workflows/test-suite.yml'
               - '.github/actions/use-android-emulator/action.yml'
               - 'yarn.lock'
               - 'package.json'
+
   ios-build:
     runs-on: macos-15
     needs: check-changes
