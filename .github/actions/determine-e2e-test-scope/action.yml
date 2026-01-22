@@ -6,15 +6,16 @@ inputs:
 outputs:
   ios:
     description: 'Whether to run iOS e2e tests'
-    value: ${{ steps.logic.outputs.ios }}
+    value: ${{ steps.analyze.outputs.ios }}
   android:
     description: 'Whether to run Android e2e tests'
-    value: ${{ steps.logic.outputs.android }}
+    value: ${{ steps.analyze.outputs.android }}
 
 runs:
   using: 'composite'
   steps:
     - name: '🧮 Decide which platforms to run e2e tests for'
+      id: analyze
       shell: bash
       run: |
         FILES="${{ inputs.files }}"
