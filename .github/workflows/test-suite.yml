@@ -76,6 +76,13 @@ jobs:
             **/CHANGELOG*
             packages/@expo/cli/**
 
+      - name: 🐞 Debug
+        run: |
+          echo "All changed files: ${{ steps.changes.outputs.all_changed_files }}"
+          echo "iOS Only: ${{ steps.changes.outputs.ios_only }}"
+          echo "Android Only: ${{ steps.changes.outputs.android_only }}"
+          echo "Common: ${{ steps.changes.outputs.common }}"
+
   ios-build:
     runs-on: macos-15
     needs: detect-platform-for-e2e
