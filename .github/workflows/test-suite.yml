@@ -36,6 +36,9 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
       - name: 🧐 Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v45
