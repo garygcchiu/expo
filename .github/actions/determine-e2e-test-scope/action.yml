@@ -1,0 +1,54 @@
+name: 'Decide which platforms to run e2e tests for'
+description: 'Decide which platforms to run e2e tests for based on changed files'
+inputs:
+  files:
+    required: true
+outputs:
+  ios:
+    description: 'Whether to run iOS e2e tests'
+    value: ${{ steps.logic.outputs.ios }}
+  android:
+    description: 'Whether to run Android e2e tests'
+    value: ${{ steps.logic.outputs.android }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: '🧮 Decide which platforms to run e2e tests for'
+      shell: bash
+      run: |
+        FILES="${{ inputs.files }}"
+
+        RUN_IOS="false"
+        RUN_ANDROID="false"
+
+        for FILE in $FILES; do
+          if [[ "$FILE" == *"/ios/"* ]] || \
+            [[ "$FILE" == *".swift" ]] || \
+            [[ "$FILE" == *".podspec" ]] || \
+            [[ "$FILE" == *".xcodeproj"* ]] || \
+            [[ "$FILE" == *".xcworkspace"* ]] || \
+            [[ "$FILE" == *".plist" ]] || \
+            [[ "$FILE" == *".m" ]] || \
+            [[ "$FILE" == *".mm" ]]; then
+            RUN_IOS="true"
+            continue
+          fi
+
+          if [[ "$FILE" == *"/android/"* ]] || \
+            [[ "$FILE" == *".java" ]] || \
+            [[ "$FILE" == *".kt" ]] || \
+            [[ "$FILE" == *".gradle"* ]] || \
+            [[ "$FILE" == *".xml" ]] || \
+            [[ "$FILE" == *".pro" ]]; then
+            RUN_ANDROID="true"
+            continue
+          fi
+
+          RUN_IOS="true"
+          RUN_ANDROID="true"
+          break
+        done
+
+        echo "ios=$RUN_IOS" >> "$GITHUB_OUTPUT"
+        echo "android=$RUN_ANDROID" >> "$GITHUB_OUTPUT"
