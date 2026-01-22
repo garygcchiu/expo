@@ -31,8 +31,8 @@ jobs:
   detect-platform-for-e2e:
     runs-on: ubuntu-latest
     outputs:
-      should_run_ios: ${{ steps.changes.outputs.ios_only == 'true' || steps.changes.outputs.common == 'true' }}
-      should_run_android: ${{ steps.changes.outputs.android_only == 'true' || steps.changes.outputs.common == 'true' }}
+      should_run_ios: ${{ steps.changes.outputs.ios_only_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
+      should_run_android: ${{ steps.changes.outputs.android_only_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -79,9 +79,9 @@ jobs:
       - name: 🐞 Debug
         run: |
           echo "All changed files: ${{ steps.changes.outputs.all_changed_files }}"
-          echo "iOS Only: ${{ steps.changes.outputs.ios_only }}"
-          echo "Android Only: ${{ steps.changes.outputs.android_only }}"
-          echo "Common: ${{ steps.changes.outputs.common }}"
+          echo "iOS Only: ${{ steps.changes.outputs.ios_only_any_changed }}"
+          echo "Android Only: ${{ steps.changes.outputs.android_only_any_changed }}"
+          echo "Common: ${{ steps.changes.outputs.common_any_changed }}"
 
   ios-build:
     runs-on: macos-15
