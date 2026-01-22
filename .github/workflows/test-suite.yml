@@ -49,25 +49,39 @@ jobs:
               - 'packages/**/ios/**'
               - 'apps/bare-expo/ios/**'
               - '**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
+              - '!**.md'
+              - '!**/LICENSE*'
+              - '!**/.gitignore'
+              - '!**/CHANGELOG*'
+              - '!packages/@expo/cli/**'
 
             android_only:
               - 'packages/**/android/**'
               - 'apps/bare-expo/android/**'
               - '**/*.{java,kt,gradle,xml,pro}'
+              - '!**.md'
+              - '!**/LICENSE*'
+              - '!**/.gitignore'
+              - '!**/CHANGELOG*'
+              - '!packages/@expo/cli/**'
 
             common:
+              - '.github/**'
+              - 'yarn.lock'
               - 'apps/bare-expo/**'
               - 'apps/test-suite/**'
               - 'packages/**'
-              - '.github/workflows/test-suite.yml'
-              - '.github/actions/use-android-emulator/action.yml'
-              - 'yarn.lock'
               - '!packages/**/ios/**'
               - '!packages/**/android/**'
               - '!apps/bare-expo/ios/**'
               - '!apps/bare-expo/android/**'
               - '!**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
               - '!**/*.{java,kt,gradle,xml,pro}'
+              - '!**.md'
+              - '!**/LICENSE*'
+              - '!**/.gitignore'
+              - '!**/CHANGELOG*'
+              - '!packages/@expo/cli/**'
 
           files_ignore: |
             **.md
@@ -80,6 +94,7 @@ jobs:
         run: |
           echo "All changed files: ${{ steps.changes.outputs.all_changed_files }}"
           echo "${{ steps.changes.outputs.ios_only_all_changed_files }}"
+
           echo "${{ steps.changes.outputs.android_only_all_changed_files }}"
           echo "${{ steps.changes.outputs.common_all_changed_files }}"
 
