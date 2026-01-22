@@ -39,7 +39,6 @@ jobs:
         with:
           fetch-depth: 0
           filter: blob:none
-
       - name: 🧐 Check changes categories
         id: changes
         uses: tj-actions/changed-files@v45
@@ -49,21 +48,15 @@ jobs:
               - 'packages/**/ios/**'
               - 'apps/bare-expo/ios/**'
               - '**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
-              - '!**.md'
-              - '!**/LICENSE*'
-              - '!**/.gitignore'
-              - '!**/CHANGELOG*'
-              - '!packages/@expo/cli/**'
+
+              - '!{**.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*}'
 
             android_only:
               - 'packages/**/android/**'
               - 'apps/bare-expo/android/**'
               - '**/*.{java,kt,gradle,xml,pro}'
-              - '!**.md'
-              - '!**/LICENSE*'
-              - '!**/.gitignore'
-              - '!**/CHANGELOG*'
-              - '!packages/@expo/cli/**'
+
+              - '!{**.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*}'
 
             common:
               - '.github/**'
@@ -71,33 +64,12 @@ jobs:
               - 'apps/bare-expo/**'
               - 'apps/test-suite/**'
               - 'packages/**'
-              - '!packages/**/ios/**'
-              - '!packages/**/android/**'
-              - '!apps/bare-expo/ios/**'
-              - '!apps/bare-expo/android/**'
+
+              - '!packages/**/{ios,android}/**'
+              - '!apps/bare-expo/{ios,android}/**'
               - '!**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
               - '!**/*.{java,kt,gradle,xml,pro}'
-              - '!**.md'
-              - '!**/LICENSE*'
-              - '!**/.gitignore'
-              - '!**/CHANGELOG*'
-              - '!packages/@expo/cli/**'
-
-          files_ignore: |
-            **.md
-            **/LICENSE*
-            **/.gitignore
-            **/CHANGELOG*
-            packages/@expo/cli/**
-
-      - name: 🐞 Debug
-        run: |
-          echo "All changed files: ${{ steps.changes.outputs.all_changed_files }}"
-          echo "${{ steps.changes.outputs.ios_only_all_changed_files }}"
-
-          echo "${{ steps.changes.outputs.android_only_all_changed_files }}"
-          echo "${{ steps.changes.outputs.common_all_changed_files }}"
-
+              - '!{**.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*}'
   ios-build:
     runs-on: macos-15
     needs: detect-platform-for-e2e
