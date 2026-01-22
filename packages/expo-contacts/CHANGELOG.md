@@ -2,8 +2,6 @@
 
 ## Unpublished
 
-OFHAWOIFHAWOIFAW
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
