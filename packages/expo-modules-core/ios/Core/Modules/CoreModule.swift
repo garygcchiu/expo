@@ -67,6 +67,18 @@ internal final class CoreModule: Module {
       }
     }
 
+    Function("nothing") {}
+
+    Function("addNumbers") { (a: Double, b: Double) in
+      return a + b
+    }
+    Function("addStrings") { (a: String, b: String) in
+      return a + b
+    }
+    AsyncFunction("asynchronous") {
+      return await 2137
+    }
+
     // Expose some common classes and maybe even the `modules` host object in the future.
     Function("uuidv4") { () -> String in
       return UUID().uuidString.lowercased()
