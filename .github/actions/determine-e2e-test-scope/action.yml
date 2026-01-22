@@ -49,6 +49,6 @@ runs:
           RUN_ANDROID="true"
           break
         done
-
+        echo "Determined test platforms to run: iOS=$RUN_IOS, Android=$RUN_ANDROID"
         echo "ios=$RUN_IOS" >> "$GITHUB_OUTPUT"
         echo "android=$RUN_ANDROID" >> "$GITHUB_OUTPUT"
