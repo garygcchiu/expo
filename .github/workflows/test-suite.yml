@@ -79,9 +79,9 @@ jobs:
       - name: 🐞 Debug
         run: |
           echo "All changed files: ${{ steps.changes.outputs.all_changed_files }}"
-          echo "iOS Only: ${{ steps.changes.outputs.ios_only_any_changed }}"
-          echo "Android Only: ${{ steps.changes.outputs.android_only_any_changed }}"
-          echo "Common: ${{ steps.changes.outputs.common_any_changed }}"
+          echo "${{ steps.changes.outputs.ios_only_all_changed_files }}"
+          echo "${{ steps.changes.outputs.android_only_all_changed_files }}"
+          echo "${{ steps.changes.outputs.common_all_changed_files }}"
 
   ios-build:
     runs-on: macos-15
