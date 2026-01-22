@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   detect-platform-for-e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       should_run_ios: ${{ steps.changes.outputs.ios_only_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
       should_run_android: ${{ steps.changes.outputs.android_only_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
@@ -48,23 +48,21 @@ jobs:
               - 'packages/**/ios/**'
               - 'apps/bare-expo/ios/**'
               - '**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
-
               - '!{**.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*}'
 
             android_only:
               - 'packages/**/android/**'
               - 'apps/bare-expo/android/**'
               - '**/*.{java,kt,gradle,xml,pro}'
-
               - '!{**.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*}'
 
             common:
-              - '.github/**'
-              - 'yarn.lock'
+              - .github/workflows/test-suite.yml
+              - .github/actions/use-android-emulator/action.yml
               - 'apps/bare-expo/**'
               - 'apps/test-suite/**'
               - 'packages/**'
-
+              - 'yarn.lock'
               - '!packages/**/{ios,android}/**'
               - '!apps/bare-expo/{ios,android}/**'
               - '!**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
