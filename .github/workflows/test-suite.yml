@@ -37,7 +37,7 @@ jobs:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
           filter: blob:none
 
       - name: 🧐 Check changes categories
