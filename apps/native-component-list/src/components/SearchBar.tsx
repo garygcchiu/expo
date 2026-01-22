@@ -25,7 +25,6 @@ export default function SearchBar({
 }) {
   const [text, setText] = React.useState(initialValue);
   const _textInput = React.useRef<TextInput>(null);
-  const _isMounted = React.useRef(true);
 
   React.useEffect(() => {
     requestAnimationFrame(() => {

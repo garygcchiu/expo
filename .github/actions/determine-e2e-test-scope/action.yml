@@ -1,14 +1,13 @@
-name: 'Decide which platforms to run e2e tests for'
-description: 'Decide which platforms to run e2e tests for based on changed files'
 inputs:
   files:
     required: true
+
 outputs:
   ios:
-    description: 'Whether to run iOS e2e tests'
+    description: 'Whether any files changed that affects iOS build'
     value: ${{ steps.analyze.outputs.ios }}
   android:
-    description: 'Whether to run Android e2e tests'
+    description: 'Whether any files changed that affects Android build'
     value: ${{ steps.analyze.outputs.android }}
 
 runs:
@@ -18,38 +17,37 @@ runs:
       id: analyze
       shell: bash
       run: |
-        FILES="${{ inputs.files }}"
+        run_ios="false"
+        run_android="false"
 
-        RUN_IOS="false"
-        RUN_ANDROID="false"
-
-        for FILE in $FILES; do
-          if [[ "$FILE" == *"/ios/"* ]] || \
-            [[ "$FILE" == *".swift" ]] || \
-            [[ "$FILE" == *".podspec" ]] || \
-            [[ "$FILE" == *".xcodeproj"* ]] || \
-            [[ "$FILE" == *".xcworkspace"* ]] || \
-            [[ "$FILE" == *".plist" ]] || \
-            [[ "$FILE" == *".m" ]] || \
-            [[ "$FILE" == *".mm" ]]; then
-            RUN_IOS="true"
+        for file in ${{ inputs.files }}; do
+          if [[ "$file" == "packages/"*"/ios/"* ]] || \
+            [[ "$file" == "packages/"*".swift" ]] || \
+            [[ "$file" == "packages/"*".podspec" ]] || \
+            [[ "$file" == "packages/"*".xcodeproj"* ]] || \
+            [[ "$file" == "packages/"*".xcworkspace"* ]] || \
+            [[ "$file" == "packages/"*".plist" ]] || \
+            [[ "$file" == "packages/"*".m" ]] || \
+            [[ "$file" == "packages/"*".mm" ]]; then
+            run_ios="true"
             continue
           fi
 
-          if [[ "$FILE" == *"/android/"* ]] || \
-            [[ "$FILE" == *".java" ]] || \
-            [[ "$FILE" == *".kt" ]] || \
-            [[ "$FILE" == *".gradle"* ]] || \
-            [[ "$FILE" == *".xml" ]] || \
-            [[ "$FILE" == *".pro" ]]; then
-            RUN_ANDROID="true"
+          if [[ "$file" == "packages/"*"/android/"* ]] || \
+            [[ "$file" == "packages/"*".java" ]] || \
+            [[ "$file" == "packages/"*".kt" ]] || \
+            [[ "$file" == "packages/"*".gradle"* ]] || \
+            [[ "$file" == "packages/"*".xml" ]] || \
+            [[ "$file" == "packages/"*".pro" ]]; then
+            run_android="true"
             continue
           fi
 
-          RUN_IOS="true"
-          RUN_ANDROID="true"
+          run_ios="true"
+          run_android="true"
           break
         done
-        echo "Determined test platforms to run: iOS=$RUN_IOS, Android=$RUN_ANDROID"
-        echo "ios=$RUN_IOS" >> "$GITHUB_OUTPUT"
-        echo "android=$RUN_ANDROID" >> "$GITHUB_OUTPUT"
+
+        echo "Files in these platforms have changed: iOS=$run_ios, Android=$run_android"
+        echo "ios=$run_ios" >> "$GITHUB_OUTPUT"
+        echo "android=$run_android" >> "$GITHUB_OUTPUT"
