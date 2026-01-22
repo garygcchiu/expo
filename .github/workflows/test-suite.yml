@@ -31,35 +31,50 @@ jobs:
   detect-platform-for-e2e:
     runs-on: ubuntu-latest
     outputs:
-      should_run_ios: ${{ steps.analyze.outputs.ios }}
-      should_run_android: ${{ steps.analyze.outputs.android }}
+      should_run_ios: ${{ steps.changes.outputs.ios_only == 'true' || steps.changes.outputs.common == 'true' }}
+      should_run_android: ${{ steps.changes.outputs.android_only == 'true' || steps.changes.outputs.common == 'true' }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           filter: blob:none
-      - name: 🧐 Get changed files
-        id: changed-files
+
+      - name: 🧐 Check changes categories
+        id: changes
         uses: tj-actions/changed-files@v45
         with:
-          files: |
-            apps/bare-expo/**
-            apps/test-suite/**
-            packages/**
-            .github/workflows/test-suite.yml
-            .github/actions/use-android-emulator/action.yml
-            yarn.lock
+          files_yaml: |
+            ios_only:
+              - 'packages/**/ios/**'
+              - 'apps/bare-expo/ios/**'
+              - '**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
+
+            android_only:
+              - 'packages/**/android/**'
+              - 'apps/bare-expo/android/**'
+              - '**/*.{java,kt,gradle,xml,pro}'
+
+            common:
+              - 'apps/bare-expo/**'
+              - 'apps/test-suite/**'
+              - 'packages/**'
+              - '.github/workflows/test-suite.yml'
+              - '.github/actions/use-android-emulator/action.yml'
+              - 'yarn.lock'
+              - '!packages/**/ios/**'
+              - '!packages/**/android/**'
+              - '!apps/bare-expo/ios/**'
+              - '!apps/bare-expo/android/**'
+              - '!**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
+              - '!**/*.{java,kt,gradle,xml,pro}'
+
           files_ignore: |
             **.md
             **/LICENSE*
             **/.gitignore
             **/CHANGELOG*
-      - name: 🧮 Decide which platforms to run e2e tests for
-        id: analyze
-        uses: ./.github/actions/determine-e2e-test-scope
-        with:
-          files: ${{ steps.changed-files.outputs.all_changed_files }}
+            packages/@expo/cli/**
 
   ios-build:
     runs-on: macos-15
