@@ -254,6 +254,8 @@ jobs:
 
   android-build:
     runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/wenszel/android-runner:latest
     needs: detect-platform-for-e2e
     if: needs.detect-platform-for-e2e.outputs.should_run_android == 'true'
     permissions:
