@@ -266,7 +266,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       expect(typeof contactId).toBe('string');
       const contact = await Contacts.getContactByIdAsync(contactId);
       expect(contact.urlAddresses.length).toBe(1);
-      console.log('hello world');
       const modifiedId = await Contacts.updateContactAsync({
         ...contact,
         [Contacts.Fields.UrlAddresses]: [

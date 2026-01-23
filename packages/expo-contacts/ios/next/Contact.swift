@@ -3,6 +3,7 @@ import Contacts
 
 class ContactNext: SharedObject {
   let id: String
+  let test: String = "test"
   private let contactRepository: ContactRepository
   private let imageService: ImageService
   private let imageMapper: ImageMapper
